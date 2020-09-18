@@ -1,0 +1,8 @@
+/.calva/
+/.idea/
+/.lein-*
+/.nrepl-port
+/*.iml
+/pom.xml
+/pom.xml.asc
+/target/
