@@ -1,10 +1,10 @@
-(defproject my-project "0.1.0-SNAPSHOT"
+(defproject new-clojure-project "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [medley "1.3.0"]]
   :managed-dependencies [[org.clojure/spec.alpha "0.2.187"]]
   :pedantic? :abort
 
-  :main ^:skip-aot my-project.core
+  :main ^:skip-aot kata
   :target-path "target/%s"
   :jvm-opts ["--illegal-access=deny"
              "-XX:-OmitStackTraceInFastThrow"]

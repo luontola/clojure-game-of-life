@@ -1,6 +1,6 @@
-(ns my-project.core-test
+(ns kata-test
   (:require [clojure.test :refer [deftest is testing]]
-            [my-project.core :as core]))
+            [kata]))
 
 (deftest a-test
   (testing "FIXME, I fail."

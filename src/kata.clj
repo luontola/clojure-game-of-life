@@ -1,4 +1,4 @@
-(ns my-project.core
+(ns kata
   (:gen-class))
 
 (defn -main [& _args]
