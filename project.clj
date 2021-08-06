@@ -3,6 +3,7 @@
                  [medley "1.3.0"]]
   :managed-dependencies [[org.clojure/spec.alpha "0.2.187"]]
   :pedantic? :abort
+  :global-vars {*warn-on-reflection* true}
 
   :main ^:skip-aot kata
   :target-path "target/%s"
