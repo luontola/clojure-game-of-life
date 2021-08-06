@@ -6,6 +6,7 @@
 
   :main ^:skip-aot kata
   :target-path "target/%s"
+  :javac-options ["--release" "11"]
   :jvm-opts ["--illegal-access=deny"
              "-XX:-OmitStackTraceInFastThrow"]
 
