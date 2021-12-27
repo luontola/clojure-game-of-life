@@ -1,9 +1,11 @@
+/*.iml
 /.calva/
+/.clj-kondo/
 /.idea/
 /.lein-*
+/.lsp/
 /.nrepl-port
 /.vscode/
-/*.iml
 /pom.xml
 /pom.xml.asc
 /target/
