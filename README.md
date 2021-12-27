@@ -28,3 +28,7 @@ Start a REPL
 Build an uberjar for distribution
 
     lein uberjar
+
+Upgrade dependencies
+
+    lein ancient upgrade :all :check-clojure :no-tests
