@@ -74,3 +74,37 @@
 
   (testing "repeated tags"
     (is (= "2b3o4$!" (parser/rle-encode "bbooo$$$$!")))))
+
+(deftest pattern->cells-test
+  (testing "empty pattern"
+    (is (= #{} (parser/pattern->cells "")))
+    (is (= #{} (parser/pattern->cells "!")))
+    (is (= #{} (parser/pattern->cells "d$d!"))
+        "only dead cells"))
+
+  (testing "one live cell"
+    (is (= #{{:x 0, :y 0}}
+           (parser/pattern->cells "o"))))
+
+  (testing "many cells in the same row"
+    (is (= #{{:x 0, :y 0}
+             {:x 1, :y 0}
+             {:x 2, :y 0}}
+           (parser/pattern->cells "ooo"))))
+
+  (testing "many cells in the same column"
+    (is (= #{{:x 0, :y 0}
+             {:x 0, :y 1}
+             {:x 0, :y 2}}
+           (parser/pattern->cells "o$o$o"))))
+
+  (testing "mix of dead and live cells (diagonal shape)"
+    (is (= #{{:x 0, :y 0}
+             {:x 1, :y 1}
+             {:x 2, :y 2}}
+           (parser/pattern->cells "o$do$ddo"))))
+
+  (testing "the pattern ends with !"
+    (is (= #{{:x 0, :y 0}
+             {:x 1, :y 1}}
+           (parser/pattern->cells "o$do$!ddo")))))

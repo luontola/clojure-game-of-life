@@ -41,6 +41,33 @@
         (recur (.append output tag-encoded)
                (subs input run-count))))))
 
+(defn pattern->cells [input]
+  (loop [output #{}
+         input input
+         x 0
+         y 0]
+    (if (empty? input)
+      output
+      (let [tag (first input)]
+        (case tag
+          ;; dead cell
+          \d (recur output
+                    (subs input 1)
+                    (inc x)
+                    y)
+          ;; alive cell
+          \o (recur (conj output {:x x, :y y})
+                    (subs input 1)
+                    (inc x)
+                    y)
+          ;; end of line
+          \$ (recur output
+                    (subs input 1)
+                    0
+                    (inc y))
+          ;; end of pattern
+          \! output)))))
+
 (defn rle-file->pattern [data]
   (let [pattern (->> (str/split-lines data)
                      (map str/trim)
