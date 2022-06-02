@@ -116,6 +116,12 @@
             :pattern "!"}
            (parser/cells->pattern #{}))))
 
+  (testing "one cell"
+    (is (= {:min-x 5
+            :min-y 7
+            :pattern "o!"}
+           (parser/cells->pattern #{{:x 5, :y 7}}))))
+
   (testing "live cells in the same row"
     (is (= {:min-x 0
             :min-y 0
@@ -123,6 +129,14 @@
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 1, :y 0}
                                     {:x 2, :y 0}}))))
+
+  (testing "live cells in the same column"
+    (is (= {:min-x 0
+            :min-y 0
+            :pattern "o$o$o!"}
+           (parser/cells->pattern #{{:x 0, :y 0}
+                                    {:x 0, :y 1}
+                                    {:x 0, :y 2}}))))
 
   (testing "dead and alive cells in the same row"
     (is (= {:min-x 0
@@ -141,4 +155,31 @@
             :pattern "odo!"}
            (parser/cells->pattern #{{:x -1, :y 0}
                                     {:x -3, :y 0}}))
-        "negative indexes")))
+        "negative indexes"))
+
+  (testing "dead and alive cells in the same column"
+    (is (= {:min-x 0
+            :min-y 0
+            :pattern "o$$o!"}
+           (parser/cells->pattern #{{:x 0, :y 0}
+                                    {:x 0, :y 2}})))
+    (is (= {:min-x 0
+            :min-y 1
+            :pattern "o$$o!"}
+           (parser/cells->pattern #{{:x 0, :y 1}
+                                    {:x 0, :y 3}}))
+        "column starts with dead cells")
+    (is (= {:min-x 0
+            :min-y -3
+            :pattern "o$$o!"}
+           (parser/cells->pattern #{{:x 0, :y -1}
+                                    {:x 0, :y -3}}))
+        "negative indexes"))
+
+  (testing "rows which start with dead cells (diagonal shape)"
+    (is (= {:min-x 0
+            :min-y 0
+            :pattern "o$do$ddo!"}
+           (parser/cells->pattern #{{:x 0, :y 0}
+                                    {:x 1, :y 1}
+                                    {:x 2, :y 2}})))))
