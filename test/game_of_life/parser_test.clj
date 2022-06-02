@@ -58,3 +58,15 @@
            o!
 
            ")))))
+
+(deftest rle-decode-test
+  (testing "empty pattern"
+    (is (= "" (parser/rle-decode "")))
+    (is (= "!" (parser/rle-decode "!"))))
+
+  (testing "non-repeated tags"
+    (is (= "bo$" (parser/rle-decode "bo$")))
+    (is (= "bo$" (parser/rle-decode "1b1o1$"))))
+
+  (testing "repeated tags"
+    (is (= "bbooo$$$$!" (parser/rle-decode "2b3o4$!")))))
