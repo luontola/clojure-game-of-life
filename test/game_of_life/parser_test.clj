@@ -2,61 +2,54 @@
   (:require [clojure.test :refer :all]
             [game-of-life.parser :as parser]))
 
-(deftest rle-file->pattern-test
+(def round-trip-decode
+  (comp parser/pattern->rle-file
+        parser/rle-file->pattern))
+
+(deftest rle-parsing-test
+
   (testing "minimal RLE file"
-    (is (= {:hash-lines []
-            :header-line "x = 0, y = 0"
-            :encoded-pattern ""}
-           (parser/rle-file->pattern "x = 0, y = 0"))))
+    (is (= "x = 0, y = 0\n"
+           (round-trip-decode "x = 0, y = 0"))))
 
   (testing "error: empty file"
     (is (thrown-with-msg?
          IllegalArgumentException #"header line is missing"
-         (parser/rle-file->pattern ""))))
+         (round-trip-decode ""))))
 
   (testing "supports basic Life rules"
-    (is (= {:hash-lines []
-            :header-line "x = 0, y = 0, rule = B3/S23"
-            :encoded-pattern ""}
-           (parser/rle-file->pattern "x = 0, y = 0, rule = B3/S23"))))
+    (is (= "x = 0, y = 0, rule = B3/S23\n"
+           (round-trip-decode "x = 0, y = 0, rule = B3/S23"))))
 
   (testing "doesn't support HighLife rules"
     (is (thrown-with-msg?
          IllegalArgumentException #"unsupported rule: B36/S23"
-         (parser/rle-file->pattern "x = 0, y = 0, rule = B36/S23"))))
+         (round-trip-decode "x = 0, y = 0, rule = B36/S23"))))
 
   (testing "supports comments and other # lines"
-    (is (= {:hash-lines ["#N Name of the pattern"
-                         "#C This is a comment"]
-            :header-line "x = 0, y = 0"
-            :encoded-pattern ""}
-           (parser/rle-file->pattern
+    (is (= "#N Name of the pattern\n#C This is a comment\nx = 0, y = 0\n"
+           (round-trip-decode
             "#N Name of the pattern
              #C This is a comment
              x = 0, y = 0"))))
 
   (testing "multiple lines of pattern are joined into one"
-    (is (= {:hash-lines ["#N Gosper glider gun"]
-            :header-line "x = 36, y = 9, rule = B3/S23"
-            :encoded-pattern "24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!"}
-           (parser/rle-file->pattern
+    (is (= "#N Gosper glider gun\nx = 36, y = 9, rule = B3/S23\n24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!"
+           (round-trip-decode
             "#N Gosper glider gun
              x = 36, y = 9, rule = B3/S23
              24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
              obo$10bo5bo7bo$11bo3bo$12b2o!"))))
 
   (testing "ignores empty lines"
-    (is (= {:hash-lines []
-            :header-line "x = 3, y = 1, rule = B3/S23"
-            :encoded-pattern "3o!"}
-           (parser/rle-file->pattern
+    (is (= "x = 3, y = 1, rule = B3/S23\n3o!"
+           (round-trip-decode
             "
            x = 3, y = 1, rule = B3/S23
 
            3
 
            o!
-
            ")))))
 
 (deftest rle-decode-test
