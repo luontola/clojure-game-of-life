@@ -79,7 +79,7 @@
   (testing "empty pattern"
     (is (= #{} (parser/pattern->cells "")))
     (is (= #{} (parser/pattern->cells "!")))
-    (is (= #{} (parser/pattern->cells "d$d!"))
+    (is (= #{} (parser/pattern->cells "b$b!"))
         "only dead cells"))
 
   (testing "one live cell"
@@ -102,12 +102,12 @@
     (is (= #{{:x 0, :y 0}
              {:x 1, :y 1}
              {:x 2, :y 2}}
-           (parser/pattern->cells "o$do$ddo!"))))
+           (parser/pattern->cells "o$bo$bbo!"))))
 
   (testing "the pattern ends with !, anything after it will be discarded"
     (is (= #{{:x 0, :y 0}
              {:x 1, :y 1}}
-           (parser/pattern->cells "o$do$!ddo")))))
+           (parser/pattern->cells "o$bo$!bbo")))))
 
 (deftest cells->pattern-test
   (testing "no cells"
@@ -141,18 +141,18 @@
   (testing "dead and alive cells in the same row"
     (is (= {:min-x 0
             :min-y 0
-            :pattern "odo!"}
+            :pattern "obo!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 2, :y 0}})))
     (is (= {:min-x 1
             :min-y 0
-            :pattern "odo!"}
+            :pattern "obo!"}
            (parser/cells->pattern #{{:x 1, :y 0}
                                     {:x 3, :y 0}}))
         "row starts with dead cells")
     (is (= {:min-x -3
             :min-y 0
-            :pattern "odo!"}
+            :pattern "obo!"}
            (parser/cells->pattern #{{:x -1, :y 0}
                                     {:x -3, :y 0}}))
         "negative indexes"))
@@ -179,7 +179,7 @@
   (testing "rows which start with dead cells (diagonal shape)"
     (is (= {:min-x 0
             :min-y 0
-            :pattern "o$do$ddo!"}
+            :pattern "o$bo$bbo!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 1, :y 1}
                                     {:x 2, :y 2}})))))

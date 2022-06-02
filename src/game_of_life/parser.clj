@@ -51,7 +51,7 @@
       (let [tag (first input)]
         (case tag
           ;; dead cell
-          \d (recur output
+          \b (recur output
                     (subs input 1)
                     (inc x)
                     y)
@@ -78,7 +78,7 @@
       (apply str (for [x (range min-x (inc max-x))]
                    (if (x-alive? x)
                      \o
-                     \d))))))
+                     \b))))))
 
 (defn cells->pattern [cells]
   (let [xs (->> cells
