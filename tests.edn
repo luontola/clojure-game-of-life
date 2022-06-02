@@ -1,0 +1,5 @@
+#kaocha/v1
+        {:kaocha/reporter [kaocha.report.progress/report]
+         :plugins [:kaocha.plugin/profiling]
+         :kaocha.plugin.profiling/count 3
+         :capture-output? false}
