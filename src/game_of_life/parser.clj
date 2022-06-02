@@ -85,6 +85,7 @@
                 (map :x)
                 (sort))
         min-x (or (first xs) 0)
+        max-x (or (last xs) 0)
         ys (->> cells
                 (map :y)
                 (sort))
@@ -93,6 +94,12 @@
         row->cells (group-by :y cells)]
     {:min-x min-x
      :min-y min-y
+     :width (if (empty? cells)
+              0
+              (- (inc max-x) min-x))
+     :height (if (empty? cells)
+               0
+               (- (inc max-y) min-y))
      :pattern (str
                (str/join "$" (for [y (range min-y (inc max-y))]
                                (row-of-cells->pattern (row->cells y)
@@ -122,6 +129,5 @@
   (let [{:keys [min-x min-y width height pattern]} (cells->pattern (:cells world))
         header-line (str "x = " width ", y = " height ", rule = " life-rule)]
     (str/join "\n" (concat (:hash-lines world)
-                           ;; TODO: generate header line based on pattern width/height
-                           [(:header-line world)
+                           [header-line
                             (rle-encode pattern)]))))

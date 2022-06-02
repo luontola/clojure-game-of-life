@@ -8,7 +8,7 @@
 
 (deftest rle-parsing-test
   (testing "minimal RLE file"
-    (is (= "x = 0, y = 0\n!"
+    (is (= "x = 0, y = 0, rule = B3/S23\n!"
            (rle-round-trip "x = 0, y = 0"))))
 
   (testing "error: empty file"
@@ -26,7 +26,7 @@
          (rle-round-trip "x = 0, y = 0, rule = B36/S23"))))
 
   (testing "supports comments and other # lines"
-    (is (= "#N Name of the pattern\n#C This is a comment\nx = 0, y = 0\n!"
+    (is (= "#N Name of the pattern\n#C This is a comment\nx = 0, y = 0, rule = B3/S23\n!"
            (rle-round-trip
             "#N Name of the pattern
              #C This is a comment
@@ -112,18 +112,24 @@
   (testing "no cells"
     (is (= {:min-x 0
             :min-y 0
+            :width 0
+            :height 0
             :pattern "!"}
            (parser/cells->pattern #{}))))
 
   (testing "one cell"
     (is (= {:min-x 5
             :min-y 7
+            :width 1
+            :height 1
             :pattern "o!"}
            (parser/cells->pattern #{{:x 5, :y 7}}))))
 
   (testing "live cells in the same row"
     (is (= {:min-x 0
             :min-y 0
+            :width 3
+            :height 1
             :pattern "ooo!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 1, :y 0}
@@ -132,6 +138,8 @@
   (testing "live cells in the same column"
     (is (= {:min-x 0
             :min-y 0
+            :width 1
+            :height 3
             :pattern "o$o$o!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 0, :y 1}
@@ -140,17 +148,23 @@
   (testing "dead and alive cells in the same row"
     (is (= {:min-x 0
             :min-y 0
+            :width 3
+            :height 1
             :pattern "obo!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 2, :y 0}})))
     (is (= {:min-x 1
             :min-y 0
+            :width 3
+            :height 1
             :pattern "obo!"}
            (parser/cells->pattern #{{:x 1, :y 0}
                                     {:x 3, :y 0}}))
         "row starts with dead cells")
     (is (= {:min-x -3
             :min-y 0
+            :width 3
+            :height 1
             :pattern "obo!"}
            (parser/cells->pattern #{{:x -1, :y 0}
                                     {:x -3, :y 0}}))
@@ -159,17 +173,23 @@
   (testing "dead and alive cells in the same column"
     (is (= {:min-x 0
             :min-y 0
+            :width 1
+            :height 3
             :pattern "o$$o!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 0, :y 2}})))
     (is (= {:min-x 0
             :min-y 1
+            :width 1
+            :height 3
             :pattern "o$$o!"}
            (parser/cells->pattern #{{:x 0, :y 1}
                                     {:x 0, :y 3}}))
         "column starts with dead cells")
     (is (= {:min-x 0
             :min-y -3
+            :width 1
+            :height 3
             :pattern "o$$o!"}
            (parser/cells->pattern #{{:x 0, :y -1}
                                     {:x 0, :y -3}}))
@@ -178,6 +198,8 @@
   (testing "rows which start with dead cells (diagonal shape)"
     (is (= {:min-x 0
             :min-y 0
+            :width 3
+            :height 3
             :pattern "o$bo$bbo!"}
            (parser/cells->pattern #{{:x 0, :y 0}
                                     {:x 1, :y 1}
