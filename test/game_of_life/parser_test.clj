@@ -34,7 +34,7 @@
              #C This is a comment
              x = 0, y = 0"))))
 
-  (testing "multiple lines of pattern are joined into one"
+  (testing "patterns may be wrapped on multiple lines"
     (is (= (str "#N Gosper glider gun\n"
                 "x = 36, y = 9, rule = B3/S23\n"
                 "24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b\n"
