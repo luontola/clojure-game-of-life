@@ -18,9 +18,14 @@
                          [(:header-line pattern)
                           (:encoded-pattern pattern)])))
 
+(defn simulate-world [pattern iterations]
+  ;; TODO
+  pattern)
+
 (defn -main [& [input-file iterations]]
   (-> input-file
       (slurp)
       (rle-file->pattern)
+      (simulate-world (parse-long iterations))
       (pattern->rle-file)
       (println)))
