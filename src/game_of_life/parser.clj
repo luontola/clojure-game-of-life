@@ -99,7 +99,7 @@
                                                       min-x)))
                "!")}))
 
-(defn rle-file->pattern [data]
+(defn rle-file->world [data]
   (let [pattern (->> (str/split-lines data)
                      (map str/trim)
                      (reduce (fn [result line]
@@ -114,10 +114,14 @@
     ;; TODO: the header content is not actually used, so remove it after rule validation
     (-> pattern
         (dissoc :encoded-pattern)
-        (assoc :pattern (rle-decode (:encoded-pattern pattern))))))
+        (assoc :cells (-> (:encoded-pattern pattern)
+                          (rle-decode)
+                          (pattern->cells))))))
 
-(defn pattern->rle-file [pattern]
-  (str/join "\n" (concat (:hash-lines pattern)
-                         ;; TODO: generate header line based on pattern width/height
-                         [(:header-line pattern)
-                          (rle-encode (:pattern pattern))])))
+(defn world->rle-file [world]
+  (let [{:keys [min-x min-y width height pattern]} (cells->pattern (:cells world))
+        header-line (str "x = " width ", y = " height ", rule = " life-rule)]
+    (str/join "\n" (concat (:hash-lines world)
+                           ;; TODO: generate header line based on pattern width/height
+                           [(:header-line world)
+                            (rle-encode pattern)]))))

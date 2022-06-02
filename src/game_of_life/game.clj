@@ -1,5 +1,5 @@
 (ns game-of-life.game)
 
-(defn simulate [pattern iterations]
+(defn simulate [world iterations]
   ;; TODO
-  pattern)
+  world)

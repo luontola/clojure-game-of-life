@@ -2,40 +2,39 @@
   (:require [clojure.test :refer :all]
             [game-of-life.parser :as parser]))
 
-(def round-trip-decode
-  (comp parser/pattern->rle-file
-        parser/rle-file->pattern))
+(def rle-round-trip
+  (comp parser/world->rle-file
+        parser/rle-file->world))
 
 (deftest rle-parsing-test
-
   (testing "minimal RLE file"
-    (is (= "x = 0, y = 0\n"
-           (round-trip-decode "x = 0, y = 0"))))
+    (is (= "x = 0, y = 0\n!"
+           (rle-round-trip "x = 0, y = 0"))))
 
   (testing "error: empty file"
     (is (thrown-with-msg?
          IllegalArgumentException #"header line is missing"
-         (round-trip-decode ""))))
+         (rle-round-trip ""))))
 
   (testing "supports basic Life rules"
-    (is (= "x = 0, y = 0, rule = B3/S23\n"
-           (round-trip-decode "x = 0, y = 0, rule = B3/S23"))))
+    (is (= "x = 0, y = 0, rule = B3/S23\n!"
+           (rle-round-trip "x = 0, y = 0, rule = B3/S23"))))
 
   (testing "doesn't support HighLife rules"
     (is (thrown-with-msg?
          IllegalArgumentException #"unsupported rule: B36/S23"
-         (round-trip-decode "x = 0, y = 0, rule = B36/S23"))))
+         (rle-round-trip "x = 0, y = 0, rule = B36/S23"))))
 
   (testing "supports comments and other # lines"
-    (is (= "#N Name of the pattern\n#C This is a comment\nx = 0, y = 0\n"
-           (round-trip-decode
+    (is (= "#N Name of the pattern\n#C This is a comment\nx = 0, y = 0\n!"
+           (rle-round-trip
             "#N Name of the pattern
              #C This is a comment
              x = 0, y = 0"))))
 
   (testing "multiple lines of pattern are joined into one"
     (is (= "#N Gosper glider gun\nx = 36, y = 9, rule = B3/S23\n24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!"
-           (round-trip-decode
+           (rle-round-trip
             "#N Gosper glider gun
              x = 36, y = 9, rule = B3/S23
              24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
@@ -43,7 +42,7 @@
 
   (testing "ignores empty lines"
     (is (= "x = 3, y = 1, rule = B3/S23\n3o!"
-           (round-trip-decode
+           (rle-round-trip
             "
            x = 3, y = 1, rule = B3/S23
 

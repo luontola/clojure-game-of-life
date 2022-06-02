@@ -6,7 +6,7 @@
 (defn -main [& [input-file iterations]]
   (-> input-file
       (slurp)
-      (parser/rle-file->pattern)
+      (parser/rle-file->world)
       (game/simulate (parse-long iterations))
-      (parser/pattern->rle-file)
+      (parser/world->rle-file)
       (println)))
