@@ -33,4 +33,28 @@
            (parser/rle-file->pattern
             "#N Name of the pattern
              #C This is a comment
-             x = 0, y = 0")))))
+             x = 0, y = 0"))))
+
+  (testing "multiple lines of pattern are joined into one"
+    (is (= {:hash-lines ["#N Gosper glider gun"]
+            :header-line "x = 36, y = 9, rule = B3/S23"
+            :encoded-pattern "24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!"}
+           (parser/rle-file->pattern
+            "#N Gosper glider gun
+             x = 36, y = 9, rule = B3/S23
+             24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
+             obo$10bo5bo7bo$11bo3bo$12b2o!"))))
+
+  (testing "ignores empty lines"
+    (is (= {:hash-lines []
+            :header-line "x = 3, y = 1, rule = B3/S23"
+            :encoded-pattern "3o!"}
+           (parser/rle-file->pattern
+            "
+           x = 3, y = 1, rule = B3/S23
+
+           3
+
+           o!
+
+           ")))))
