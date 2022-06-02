@@ -11,18 +11,35 @@
     (when-not (= life-rule rule)
       (throw (IllegalArgumentException. (str "unsupported rule: " rule))))))
 
-(defn rle-decode [encoded]
-  (loop [decoded (StringBuilder.)
-         encoded encoded]
-    (if (empty? encoded)
-      (.toString decoded)
-      (let [[matched run-count tag] (re-find #"(\d+)?(.)" encoded)
+(defn rle-decode [input]
+  (loop [output (StringBuilder.)
+         input input]
+    (if (empty? input)
+      (.toString output)
+      (let [[matched run-count tag] (re-find #"(\d+)?(.)" input)
             run-count (if run-count
                         (parse-long run-count)
                         1)
             tag-decoded (apply str (repeat run-count tag))]
-        (recur (.append decoded tag-decoded)
-               (subs encoded (count matched)))))))
+        (recur (.append output tag-decoded)
+               (subs input (count matched)))))))
+
+(defn- repeated-prefix [s]
+  (let [ch (first s)]
+    [(count (take-while #(= ch %) s))
+     ch]))
+
+(defn rle-encode [input]
+  (loop [output (StringBuilder.)
+         input input]
+    (if (empty? input)
+      (.toString output)
+      (let [[run-count tag] (repeated-prefix input)
+            tag-encoded (if (= 1 run-count)
+                          tag
+                          (str run-count tag))]
+        (recur (.append output tag-encoded)
+               (subs input run-count))))))
 
 (defn rle-file->pattern [data]
   (let [pattern (->> (str/split-lines data)

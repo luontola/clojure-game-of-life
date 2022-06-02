@@ -70,3 +70,14 @@
 
   (testing "repeated tags"
     (is (= "bbooo$$$$!" (parser/rle-decode "2b3o4$!")))))
+
+(deftest rle-encode-test
+  (testing "empty pattern"
+    (is (= "" (parser/rle-encode "")))
+    (is (= "!" (parser/rle-encode "!"))))
+
+  (testing "non-repeated tags"
+    (is (= "bo$" (parser/rle-encode "bo$"))))
+
+  (testing "repeated tags"
+    (is (= "2b3o4$!" (parser/rle-encode "bbooo$$$$!")))))
