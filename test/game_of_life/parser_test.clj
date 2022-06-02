@@ -5,7 +5,7 @@
 (deftest rle-file->pattern-test
   (testing "minimal RLE file"
     (is (= {:hash-lines []
-            :header-line "x = 0, y = 0" ; TODO: the header content is not actually used, so remove it; only validate the rule
+            :header-line "x = 0, y = 0"
             :encoded-pattern ""}
            (parser/rle-file->pattern "x = 0, y = 0"))))
 

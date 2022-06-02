@@ -23,10 +23,14 @@
                               :header-line nil
                               :encoded-pattern ""}))]
     (parse-header (:header-line pattern))
+    ;; TODO: the header content is not actually used, so remove it after rule validation
+    ;; TODO: decode pattern
     pattern))
 
 (defn pattern->rle-file [pattern]
   ;; TODO: unit tests
   (str/join "\n" (concat (:hash-lines pattern)
+                         ;; TODO: generate header line based on pattern width/height
                          [(:header-line pattern)
+                          ;; TODO: encode pattern
                           (:encoded-pattern pattern)])))
