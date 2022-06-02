@@ -128,6 +128,8 @@
 (defn world->rle-file [world]
   (let [{:keys [min-x min-y width height pattern]} (cells->pattern (:cells world))
         header-line (str "x = " width ", y = " height ", rule = " life-rule)]
+    ;; TODO: add "#R" line for the top-left corner
+    ;; TODO: remove any existing "#R" line 
     (str/join "\n" (concat (:hash-lines world)
                            [header-line
                             (rle-encode pattern)]))))
