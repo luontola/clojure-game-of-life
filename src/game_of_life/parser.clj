@@ -1,15 +1,7 @@
 (ns game-of-life.parser
   (:require [clojure.string :as str]))
 
-(def life-rule "B3/S23")
-
-(defn parse-header [header-line]
-  (when-not header-line
-    (throw (IllegalArgumentException. "header line is missing")))
-  (let [rule (or (second (re-find #"rule = (.+)" header-line))
-                 life-rule)]
-    (when-not (= life-rule rule)
-      (throw (IllegalArgumentException. (str "unsupported rule: " rule))))))
+;;;; Run Length Encoding
 
 (defn rle-decode [input]
   (loop [output (StringBuilder.)
@@ -40,6 +32,9 @@
                           (str run-count tag))]
         (recur (.append output tag-encoded)
                (subs input run-count))))))
+
+
+;;;; Pattern <-> Cells
 
 (defn pattern->cells [input]
   (loop [output #{}
@@ -106,24 +101,39 @@
                                                       min-x)))
                "!")}))
 
+
+;;;; RLE file <-> World
+
+(def ^:private life-rule "B3/S23")
+
+(defn- parse-header [header-line]
+  (when-not header-line
+    (throw (IllegalArgumentException. "header line is missing")))
+  (let [rule (or (second (re-find #"rule = (.+)" header-line))
+                 life-rule)]
+    (when-not (= life-rule rule)
+      (throw (IllegalArgumentException. (str "unsupported rule: " rule))))))
+
+(defn- parse-file [data]
+  (->> (str/split-lines data)
+       (map str/trim)
+       (reduce (fn [result line]
+                 (case (first line)
+                   \# (update result :hash-lines conj line)
+                   \x (assoc result :header-line line)
+                   (update result :encoded-pattern str line)))
+               {:hash-lines []
+                :header-line nil
+                :encoded-pattern ""})))
+
 (defn rle-file->world [data]
-  (let [pattern (->> (str/split-lines data)
-                     (map str/trim)
-                     (reduce (fn [result line]
-                               (case (first line)
-                                 \# (update result :hash-lines conj line)
-                                 \x (assoc result :header-line line)
-                                 (update result :encoded-pattern str line)))
-                             {:hash-lines []
-                              :header-line nil
-                              :encoded-pattern ""}))]
-    (parse-header (:header-line pattern))
-    ;; TODO: the header content is not actually used, so remove it after rule validation
-    (-> pattern
-        (dissoc :encoded-pattern)
-        (assoc :cells (-> (:encoded-pattern pattern)
-                          (rle-decode)
-                          (pattern->cells))))))
+  (let [{:keys [hash-lines header-line encoded-pattern]} (parse-file data)
+        _ (parse-header header-line) ; only used for validation
+        cells (-> encoded-pattern
+                  (rle-decode)
+                  (pattern->cells))]
+    {:hash-lines hash-lines
+     :cells cells}))
 
 (defn world->rle-file [world]
   (let [{:keys [min-x min-y width height pattern]} (cells->pattern (:cells world))
