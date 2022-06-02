@@ -68,15 +68,15 @@
           ;; end of pattern
           \! output)))))
 
-(defn- format-row-of-cells [cells min-x y]
-  (let [xs (->> cells
-                (filter #(= y (:y %)))
+(defn- row-of-cells->pattern [row-of-cells min-x]
+  (let [xs (->> row-of-cells
                 (map :x)
                 (sort))
-        max-x (last xs)]
+        max-x (last xs)
+        x-alive? (set xs)]
     (when-not (empty? xs)
       (apply str (for [x (range min-x (inc max-x))]
-                   (if (contains? cells {:x x, :y y})
+                   (if (x-alive? x)
                      \o
                      \d))))))
 
@@ -89,12 +89,14 @@
                 (map :y)
                 (sort))
         min-y (or (first ys) 0)
-        max-y (or (last ys) 0)]
+        max-y (or (last ys) 0)
+        row->cells (group-by :y cells)]
     {:min-x min-x
      :min-y min-y
      :pattern (str
                (str/join "$" (for [y (range min-y (inc max-y))]
-                               (format-row-of-cells cells min-x y)))
+                               (row-of-cells->pattern (row->cells y)
+                                                      min-x)))
                "!")}))
 
 (defn rle-file->pattern [data]
