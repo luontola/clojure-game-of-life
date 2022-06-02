@@ -17,40 +17,44 @@
   (is (= test-neighbours (game/neighbours test-cell))))
 
 
-(defn random-neighbours [n]
+(defn- dead-cell-with-neighbours [n]
   (set (take n (shuffle test-neighbours))))
+
+(defn- live-cell-with-neighbours [n]
+  (-> (dead-cell-with-neighbours n)
+      (conj test-cell)))
+
+(defn- will-live? [cells]
+  (contains? (game/step cells) test-cell))
+
+(def ^:private will-die? (complement will-live?))
 
 (deftest game-rules-test
   (testing "live cell with <2 neighbours dies (underpopulation)"
     (doseq [n [0 1]]
-      (let [cells (conj (random-neighbours n) test-cell)]
-        (is (not (contains? (game/step cells) test-cell))
-            (str n " neighbours")))))
+      (is (will-die? (live-cell-with-neighbours n))
+          (str n " neighbours"))))
 
   (testing "live cell with 2-3 neighbours stays alive (healthy population)"
     (doseq [n [2 3]]
-      (let [cells (conj (random-neighbours n) test-cell)]
-        (is (contains? (game/step cells) test-cell)
-            (str n " neighbours")))))
+      (is (will-live? (live-cell-with-neighbours n))
+          (str n " neighbours"))))
 
   (testing "live cell with >3 neighbours dies (overpopulation)"
     (doseq [n [4 5 6 7 8]]
-      (let [cells (conj (random-neighbours n) test-cell)]
-        (is (not (contains? (game/step cells) test-cell))
-            (str n " neighbours")))))
+      (is (will-die? (live-cell-with-neighbours n))
+          (str n " neighbours"))))
 
   (testing "dead cell with exactly 3 live neighbours becomes alive (reproduction)"
     (doseq [n [3]]
-      (let [cells (random-neighbours n)]
-        (is (contains? (game/step cells) test-cell)
-            (str n " neighbours")))))
+      (is (will-live? (dead-cell-with-neighbours n))
+          (str n " neighbours"))))
 
   (testing "dead cell with less or more than 3 live neighbours stays dead"
     (doseq [n [0 1 2
                4 5 6 7 8]]
-      (let [cells (random-neighbours n)]
-        (is (not (contains? (game/step cells) test-cell))
-            (str n " neighbours")))))
+      (is (will-die? (dead-cell-with-neighbours n))
+          (str n " neighbours"))))
 
   (testing "no nil cells"
     (is (= #{} (game/step #{}))
