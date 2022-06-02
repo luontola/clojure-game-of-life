@@ -108,3 +108,37 @@
     (is (= #{{:x 0, :y 0}
              {:x 1, :y 1}}
            (parser/pattern->cells "o$do$!ddo")))))
+
+(deftest cells->pattern-test
+  (testing "no cells"
+    (is (= {:min-x 0
+            :min-y 0
+            :pattern "!"}
+           (parser/cells->pattern #{}))))
+
+  (testing "live cells in the same row"
+    (is (= {:min-x 0
+            :min-y 0
+            :pattern "ooo!"}
+           (parser/cells->pattern #{{:x 0, :y 0}
+                                    {:x 1, :y 0}
+                                    {:x 2, :y 0}}))))
+
+  (testing "dead and alive cells in the same row"
+    (is (= {:min-x 0
+            :min-y 0
+            :pattern "odo!"}
+           (parser/cells->pattern #{{:x 0, :y 0}
+                                    {:x 2, :y 0}})))
+    (is (= {:min-x 1
+            :min-y 0
+            :pattern "odo!"}
+           (parser/cells->pattern #{{:x 1, :y 0}
+                                    {:x 3, :y 0}}))
+        "row starts with dead cells")
+    (is (= {:min-x -3
+            :min-y 0
+            :pattern "odo!"}
+           (parser/cells->pattern #{{:x -1, :y 0}
+                                    {:x -3, :y 0}}))
+        "negative indexes")))

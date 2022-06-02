@@ -68,6 +68,42 @@
           ;; end of pattern
           \! output)))))
 
+(defn- format-row-of-cells [cells y] ; FIXME: pass in the global min-x/y
+  (let [xs (->> cells
+                (filter #(= y (:y %)))
+                (map :x)
+                (sort))
+        min-x (first xs)
+        max-x (last xs)]
+    (when-not (empty? xs)
+      (for [x (range min-x (inc max-x))]
+        (if (contains? cells {:x x, :y y})
+          \o
+          \d)))))
+
+(defn cells->pattern [cells]
+  (let [xs (->> cells
+                (map :x)
+                (sort))
+        min-x (first xs)
+        ys (->> cells
+                (map :y)
+                (sort))
+        min-y (first ys)
+        cells-by-row (group-by :y cells)]
+    ;; TODO: calculate dimensions
+    ;; TODO: print each row separately, until the last cell in the row
+    ;  FIXME: some rows/columns can be empty
+    {:min-x (or min-x 0)
+     :min-y (or min-y 0)
+     :pattern (apply str (concat
+                          (format-row-of-cells cells 0)
+                          #_(for [x ys]
+                              (if (contains? cells {:x x, :y 0})
+                                \o
+                                \d))
+                          "!"))}))
+
 (defn rle-file->pattern [data]
   (let [pattern (->> (str/split-lines data)
                      (map str/trim)
