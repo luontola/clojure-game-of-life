@@ -4,9 +4,9 @@
 
 (deftest rle-file->pattern-test
   (testing "minimal RLE file"
-    (is (= {:encoded-pattern ""
-            :hash-lines []
-            :header-line "x = 0, y = 0"}
+    (is (= {:hash-lines []
+            :header-line "x = 0, y = 0"
+            :encoded-pattern ""}
            (parser/rle-file->pattern "x = 0, y = 0"))))
 
   (testing "error: empty file"
@@ -15,12 +15,22 @@
          (parser/rle-file->pattern ""))))
 
   (testing "supports basic Life rules"
-    (is (= {:encoded-pattern ""
-            :hash-lines []
-            :header-line "x = 0, y = 0, rule = B3/S23"}
+    (is (= {:hash-lines []
+            :header-line "x = 0, y = 0, rule = B3/S23"
+            :encoded-pattern ""}
            (parser/rle-file->pattern "x = 0, y = 0, rule = B3/S23"))))
 
   (testing "doesn't support HighLife rules"
     (is (thrown-with-msg?
          IllegalArgumentException #"unsupported rule: B36/S23"
-         (parser/rle-file->pattern "x = 0, y = 0, rule = B36/S23")))))
+         (parser/rle-file->pattern "x = 0, y = 0, rule = B36/S23"))))
+
+  (testing "supports comments and other # lines"
+    (is (= {:hash-lines ["#N Name of the pattern"
+                         "#C This is a comment"]
+            :header-line "x = 0, y = 0"
+            :encoded-pattern ""}
+           (parser/rle-file->pattern
+            "#N Name of the pattern
+             #C This is a comment
+             x = 0, y = 0")))))

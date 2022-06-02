@@ -12,15 +12,16 @@
       (throw (IllegalArgumentException. (str "unsupported rule: " rule))))))
 
 (defn rle-file->pattern [data]
-  (let [pattern (reduce (fn [result line]
-                          (case (first line)
-                            \# (update result :hash-lines conj line)
-                            \x (assoc result :header-line line)
-                            (update result :encoded-pattern str line)))
-                        {:hash-lines []
-                         :header-line nil
-                         :encoded-pattern ""}
-                        (str/split-lines data))]
+  (let [pattern (->> (str/split-lines data)
+                     (map str/trim)
+                     (reduce (fn [result line]
+                               (case (first line)
+                                 \# (update result :hash-lines conj line)
+                                 \x (assoc result :header-line line)
+                                 (update result :encoded-pattern str line)))
+                             {:hash-lines []
+                              :header-line nil
+                              :encoded-pattern ""}))]
     (parse-header (:header-line pattern))
     pattern))
 
