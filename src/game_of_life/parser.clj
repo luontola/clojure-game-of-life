@@ -26,6 +26,7 @@
     pattern))
 
 (defn pattern->rle-file [pattern]
+  ;; TODO: unit tests
   (str/join "\n" (concat (:hash-lines pattern)
                          [(:header-line pattern)
                           (:encoded-pattern pattern)])))
