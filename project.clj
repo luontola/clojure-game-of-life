@@ -6,7 +6,7 @@
   :pedantic? :abort
   :global-vars {*warn-on-reflection* true}
 
-  :main ^:skip-aot kata
+  :main ^:skip-aot game-of-life.cli
   :target-path "target/%s"
   :javac-options ["--release" "11"]
   :jvm-opts ["--illegal-access=deny"

@@ -1,4 +1,4 @@
-(ns kata
+(ns game-of-life.cli
   (:gen-class))
 
 (defn -main [& _args]
