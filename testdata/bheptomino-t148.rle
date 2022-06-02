@@ -1,0 +1,6 @@
+#N B-heptomino
+#C A very common methuselah with lifespan 148 that often arises with the cell at top left shifted one space to the left, which does not affect the subsequent evolution.
+#C www.conwaylife.com/wiki/index.php?title=B-heptomino
+x = 61, y = 50, rule = B3/S23
+59bo$59b2o$58bobo14$34b2o$34b2o8$2o$obo$o2$26b2o$26b2o7$22b2o$22b2o9$
+32b2o$31bobo$31b2o!

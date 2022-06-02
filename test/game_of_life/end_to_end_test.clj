@@ -11,4 +11,10 @@
   (testing "blinker - an oscillator"
     (is (= (slurp "testdata/blinker-t1.rle")
            (with-out-str
-             (cli/-main "testdata/blinker.rle" "3"))))))
+             (cli/-main "testdata/blinker.rle" "3")))))
+
+  ;; TODO: needs line wrapping
+  #_(testing "B-heptomino - a methuselah"
+      (is (= (slurp "testdata/bheptomino-t148.rle")
+             (with-out-str
+               (cli/-main "testdata/bheptomino.rle" "148"))))))
