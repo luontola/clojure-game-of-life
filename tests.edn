@@ -1,5 +1,8 @@
 #kaocha/v1
-        {:kaocha/reporter [kaocha.report.progress/report]
+        {:tests [{:id :unit
+                  :source-paths ["src"]
+                  :test-paths ["test" "testdata"]}]
+         :kaocha/reporter [kaocha.report.progress/report]
          :plugins [:kaocha.plugin/profiling]
          :kaocha.plugin.profiling/count 3
          :capture-output? false}
