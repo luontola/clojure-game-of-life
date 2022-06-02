@@ -1,19 +1,11 @@
-# Empty Clojure Project
+# Conway's Game of Life in Clojure
 
-Something to get quickly started with Clojure for a code kata or similar.
+Small example application.
 
 ## Requirements
 
 - [Java JDK](https://www.oracle.com/java/technologies/javase-downloads.html) version 11 or higher
 - [Leiningen](https://leiningen.org/)
-
-### Recommended plugins
-
-- Visual Studio Code:
-    - [Calva](https://calva.io/)
-    - [Parinfer](https://github.com/oakmac/vscode-parinfer)
-- IntelliJ IDEA:
-    - [Cursive](https://cursive-ide.com/)
 
 ## Useful commands
 
