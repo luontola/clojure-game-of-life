@@ -57,3 +57,18 @@
         "empty world")
     (is (= #{} (game/step #{test-cell}))
         "cell dies alone")))
+
+(deftest simulate-world-test
+  (let [world-gen0 {:hash-lines ["#C some comment"]
+                    :cells #{{:x 0, :y 2}
+                             {:x 1, :y 0}
+                             {:x 1, :y 2}
+                             {:x 2, :y 1}
+                             {:x 2, :y 2}}}
+        world-gen3 {:hash-lines ["#C some comment"]
+                    :cells #{{:x 1, :y 1}
+                             {:x 1, :y 3}
+                             {:x 2, :y 2}
+                             {:x 2, :y 3}
+                             {:x 3, :y 2}}}]
+    (is (= world-gen3 (game/simulate world-gen0 3)))))

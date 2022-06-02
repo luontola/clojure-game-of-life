@@ -18,5 +18,7 @@
            cell))))
 
 (defn simulate [world iterations]
-  ;; TODO
-  world)
+  (reduce (fn [world _]
+            (update world :cells step))
+          world
+          (range iterations)))
