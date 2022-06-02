@@ -49,12 +49,12 @@
     (is (= "x = 3, y = 1, rule = B3/S23\n3o!"
            (rle-round-trip
             "
-           x = 3, y = 1, rule = B3/S23
+             x = 3, y = 1, rule = B3/S23
 
-           3
+             3
 
-           o!
-           ")))))
+             o!
+             ")))))
 
 (deftest rle-decode-test
   (testing "empty pattern"
