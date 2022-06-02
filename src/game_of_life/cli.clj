@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [clojure.string :as str]))
 
-(defn parse-rle-pattern [data]
+(defn rle-file->pattern [data]
   (reduce (fn [result line]
             (case (first line)
               \# (update result :hash-lines conj line)
@@ -13,9 +13,14 @@
            :encoded-pattern ""}
           (str/split-lines data)))
 
+(defn pattern->rle-file [pattern]
+  (str/join "\n" (concat (:hash-lines pattern)
+                         [(:header-line pattern)
+                          (:encoded-pattern pattern)])))
+
 (defn -main [& [input-file iterations]]
-  (let [data (slurp input-file)
-        parsed (parse-rle-pattern data)]
-    (println (str/join "\n" (:hash-lines parsed)))
-    (println (:header-line parsed))
-    (println (:encoded-pattern parsed))))
+  (-> input-file
+      (slurp)
+      (rle-file->pattern)
+      (pattern->rle-file)
+      (println)))
