@@ -26,14 +26,19 @@
          (rle-round-trip "x = 0, y = 0, rule = B36/S23"))))
 
   (testing "supports comments and other # lines"
-    (is (= "#N Name of the pattern\n#C This is a comment\nx = 0, y = 0, rule = B3/S23\n!"
+    (is (= (str "#N Name of the pattern\n"
+                "#C This is a comment\n"
+                "x = 0, y = 0, rule = B3/S23\n!")
            (rle-round-trip
             "#N Name of the pattern
              #C This is a comment
              x = 0, y = 0"))))
 
   (testing "multiple lines of pattern are joined into one"
-    (is (= "#N Gosper glider gun\nx = 36, y = 9, rule = B3/S23\n24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!"
+    (is (= (str "#N Gosper glider gun\n"
+                "x = 36, y = 9, rule = B3/S23\n"
+                "24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b\n"
+                "obo$10bo5bo7bo$11bo3bo$12b2o!")
            (rle-round-trip
             "#N Gosper glider gun
              x = 36, y = 9, rule = B3/S23
@@ -73,6 +78,28 @@
 
   (testing "repeated tags"
     (is (= "2b3o4$!" (parser/rle-encode "bbooo$$$$!")))))
+
+(deftest rle-line-wrap-test
+  (testing "short input is not wrapped"
+    (is (= [""] (parser/rle-line-wrap "" 70)))
+    (is (= ["!"] (parser/rle-line-wrap "!" 70)))
+    (is (= ["bo$!"] (parser/rle-line-wrap "bo$!" 70))))
+
+  (testing "wrapped lines are never longer than line-length"
+    (is (= ["bobobo!"] (parser/rle-line-wrap "bobobo!" 7)))
+    (is (= ["bobobo" "!"] (parser/rle-line-wrap "bobobo!" 6)))
+    (is (= ["bobob" "o!"] (parser/rle-line-wrap "bobobo!" 5)))
+    (is (= ["bobo" "bo!"] (parser/rle-line-wrap "bobobo!" 4)))
+    (is (= ["bob" "obo" "!"] (parser/rle-line-wrap "bobobo!" 3))))
+
+  (testing "lines are never wrapped in the middle of a <run_count><tag> item"
+    ;; i.e. whitespace is only allowed after <tag>
+    (is (= ["1o2b3$" "123b!"] (parser/rle-line-wrap "1o2b3$123b!" 7))
+        "tag=b")
+    (is (= ["1o2b3$" "123o!"] (parser/rle-line-wrap "1o2b3$123o!" 7))
+        "tag=o")
+    (is (= ["1o2b3$" "123$!"] (parser/rle-line-wrap "1o2b3$123$!" 7))
+        "tag=$")))
 
 (deftest pattern->cells-test
   (testing "empty pattern"

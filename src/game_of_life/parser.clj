@@ -33,6 +33,16 @@
         (recur (.append output tag-encoded)
                (subs input run-count))))))
 
+(defn rle-line-wrap [input line-length]
+  (loop [output []
+         input input]
+    (if (<= (count input) line-length)
+      (conj output input)
+      (let [line (subs input 0 line-length)
+            line (str/replace line #"\d+$" "")]
+        (recur (conj output line)
+               (subs input (count line)))))))
+
 
 ;;;; Pattern <-> Cells
 
@@ -137,9 +147,11 @@
 
 (defn world->rle-file [world]
   (let [{:keys [min-x min-y width height pattern]} (cells->pattern (:cells world))
-        header-line (str "x = " width ", y = " height ", rule = " life-rule)]
+        header-line (str "x = " width ", y = " height ", rule = " life-rule)
+        pattern-lines (-> (rle-encode pattern)
+                          (rle-line-wrap 70))]
     ;; TODO: add "#R" line for the top-left corner
     ;; TODO: remove any existing "#R" line 
     (str/join "\n" (concat (:hash-lines world)
-                           [header-line
-                            (rle-encode pattern)]))))
+                           [header-line]
+                           pattern-lines))))

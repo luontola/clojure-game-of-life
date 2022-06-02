@@ -13,8 +13,7 @@
            (with-out-str
              (cli/-main "testdata/blinker.rle" "3")))))
 
-  ;; TODO: needs line wrapping
-  #_(testing "B-heptomino - a methuselah"
-      (is (= (slurp "testdata/bheptomino-t148.rle")
-             (with-out-str
-               (cli/-main "testdata/bheptomino.rle" "148"))))))
+  (testing "B-heptomino - a methuselah"
+    (is (= (slurp "testdata/bheptomino-t148.rle")
+           (with-out-str
+             (cli/-main "testdata/bheptomino.rle" "148"))))))
