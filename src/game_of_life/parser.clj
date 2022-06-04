@@ -51,12 +51,10 @@
       output)))
 
 (defn- row-of-cells->pattern [row-of-cells min-x]
-  (let [xs (->> row-of-cells
-                (map :x)
-                (sort))
-        max-x (last xs)
-        x-alive? (set xs)]
-    (when-not (empty? xs)
+  (when-not (empty? row-of-cells)
+    (let [xs (map :x row-of-cells)
+          max-x (apply max xs)
+          x-alive? (set xs)]
       (apply str (for [x (range min-x (inc max-x))]
                    (if (x-alive? x)
                      live-cell
