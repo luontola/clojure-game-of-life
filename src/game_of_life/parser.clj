@@ -23,30 +23,31 @@
 
 ;;;; Pattern <-> Cells
 
+(def dead-cell \b)
+(def live-cell \o)
+(def end-of-row \$)
+(def end-of-pattern \!)
+
 (defn pattern->cells [input]
   (loop [output #{}
          input (seq input)
          x 0
          y 0]
     (if-some [tag (first input)]
-      (case tag
-        ;; dead cell
-        \b (recur output
-                  (rest input)
-                  (inc x)
-                  y)
-        ;; alive cell
-        \o (recur (conj output {:x x, :y y})
-                  (rest input)
-                  (inc x)
-                  y)
-        ;; end of line
-        \$ (recur output
-                  (rest input)
-                  0
-                  (inc y))
-        ;; end of pattern
-        \! output)
+      (condp = tag
+        dead-cell (recur output
+                         (rest input)
+                         (inc x)
+                         y)
+        live-cell (recur (conj output {:x x, :y y})
+                         (rest input)
+                         (inc x)
+                         y)
+        end-of-row (recur output
+                          (rest input)
+                          0
+                          (inc y))
+        end-of-pattern output)
       output)))
 
 (defn- row-of-cells->pattern [row-of-cells min-x]
@@ -58,8 +59,8 @@
     (when-not (empty? xs)
       (apply str (for [x (range min-x (inc max-x))]
                    (if (x-alive? x)
-                     \o
-                     \b))))))
+                     live-cell
+                     dead-cell))))))
 
 (defn- min-max [coll]
   (let [ascending (sort coll)]
@@ -79,10 +80,11 @@
                (- (inc max-y) min-y))
      :pattern (str
                (when-not (empty? cells)
-                 (str/join "$" (for [y (range min-y (inc max-y))]
-                                 (row-of-cells->pattern (row->cells y)
-                                                        min-x))))
-               "!")}))
+                 (str/join end-of-row
+                           (for [y (range min-y (inc max-y))]
+                             (row-of-cells->pattern (row->cells y)
+                                                    min-x))))
+               end-of-pattern)}))
 
 
 ;;;; RLE file <-> World
