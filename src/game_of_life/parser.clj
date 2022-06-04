@@ -25,30 +25,29 @@
 
 (defn pattern->cells [input]
   (loop [output #{}
-         input input
+         input (seq input)
          x 0
          y 0]
-    (if (empty? input)
-      output
-      (let [tag (first input)]
-        (case tag
-          ;; dead cell
-          \b (recur output
-                    (subs input 1)
-                    (inc x)
-                    y)
-          ;; alive cell
-          \o (recur (conj output {:x x, :y y})
-                    (subs input 1)
-                    (inc x)
-                    y)
-          ;; end of line
-          \$ (recur output
-                    (subs input 1)
-                    0
-                    (inc y))
-          ;; end of pattern
-          \! output)))))
+    (if-some [tag (first input)]
+      (case tag
+        ;; dead cell
+        \b (recur output
+                  (rest input)
+                  (inc x)
+                  y)
+        ;; alive cell
+        \o (recur (conj output {:x x, :y y})
+                  (rest input)
+                  (inc x)
+                  y)
+        ;; end of line
+        \$ (recur output
+                  (rest input)
+                  0
+                  (inc y))
+        ;; end of pattern
+        \! output)
+      output)))
 
 (defn- row-of-cells->pattern [row-of-cells min-x]
   (let [xs (->> row-of-cells
