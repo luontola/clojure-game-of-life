@@ -1,5 +1,6 @@
 (ns game-of-life.parser
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str])
+  (:import (java.util.regex Pattern)))
 
 ;;;; Run Length Encoding
 
@@ -15,14 +16,9 @@
                  (str (count repeated-tag) tag))))
 
 (defn rle-line-wrap [input line-length]
-  (loop [output []
-         input input]
-    (if (<= (count input) line-length)
-      (conj output input)
-      (let [line (subs input 0 line-length)
-            line (str/replace line #"\d+$" "")]
-        (recur (conj output line)
-               (subs input (count line)))))))
+  ;; the line must not end in a number, because we must avoid wrapping in the middle of a <run_count><tag> item
+  (let [line-pattern (Pattern/compile (format ".{0,%d}\\D" (dec line-length)))]
+    (re-seq line-pattern input)))
 
 
 ;;;; Pattern <-> Cells

@@ -81,7 +81,7 @@
 
 (deftest rle-line-wrap-test
   (testing "short input is not wrapped"
-    (is (= [""] (parser/rle-line-wrap "" 70)))
+    (is (empty? (parser/rle-line-wrap "" 70)))
     (is (= ["!"] (parser/rle-line-wrap "!" 70)))
     (is (= ["bo$!"] (parser/rle-line-wrap "bo$!" 70))))
 
