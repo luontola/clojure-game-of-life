@@ -62,20 +62,16 @@
                      \o
                      \b))))))
 
+(defn- min-max [coll]
+  (let [ascending (sort coll)]
+    [(first ascending) (last ascending)]))
+
 (defn cells->pattern [cells]
-  (let [xs (->> cells
-                (map :x)
-                (sort))
-        min-x (or (first xs) 0)
-        max-x (or (last xs) 0)
-        ys (->> cells
-                (map :y)
-                (sort))
-        min-y (or (first ys) 0)
-        max-y (or (last ys) 0)
+  (let [[min-x max-x] (min-max (map :x cells))
+        [min-y max-y] (min-max (map :y cells))
         row->cells (group-by :y cells)]
-    {:min-x min-x
-     :min-y min-y
+    {:min-x (or min-x 0)
+     :min-y (or min-y 0)
      :width (if (empty? cells)
               0
               (- (inc max-x) min-x))
@@ -83,9 +79,10 @@
                0
                (- (inc max-y) min-y))
      :pattern (str
-               (str/join "$" (for [y (range min-y (inc max-y))]
-                               (row-of-cells->pattern (row->cells y)
-                                                      min-x)))
+               (when-not (empty? cells)
+                 (str/join "$" (for [y (range min-y (inc max-y))]
+                                 (row-of-cells->pattern (row->cells y)
+                                                        min-x))))
                "!")}))
 
 
