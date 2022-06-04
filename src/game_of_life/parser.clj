@@ -3,35 +3,16 @@
 
 ;;;; Run Length Encoding
 
-(defn rle-decode [input]
-  (loop [output (StringBuilder.)
-         input input]
-    (if (empty? input)
-      (.toString output)
-      (let [[matched run-count tag] (re-find #"(\d+)?(.)" input)
-            run-count (if run-count
-                        (parse-long run-count)
-                        1)
-            tag-decoded (apply str (repeat run-count tag))]
-        (recur (.append output tag-decoded)
-               (subs input (count matched)))))))
+(defn run-length-decode [input]
+  (str/replace input #"(\d+)(\D)"
+               (fn [[_ run-count tag]]
+                 (apply str (repeat (parse-long run-count)
+                                    tag)))))
 
-(defn- repeated-prefix [s]
-  (let [ch (first s)]
-    [(count (take-while #(= ch %) s))
-     ch]))
-
-(defn rle-encode [input]
-  (loop [output (StringBuilder.)
-         input input]
-    (if (empty? input)
-      (.toString output)
-      (let [[run-count tag] (repeated-prefix input)
-            tag-encoded (if (= 1 run-count)
-                          tag
-                          (str run-count tag))]
-        (recur (.append output tag-encoded)
-               (subs input run-count))))))
+(defn run-length-encode [input]
+  (str/replace input #"(\D)\1+"
+               (fn [[repeated-tag tag]]
+                 (str (count repeated-tag) tag))))
 
 (defn rle-line-wrap [input line-length]
   (loop [output []
@@ -140,7 +121,7 @@
   (let [{:keys [hash-lines header-line encoded-pattern]} (parse-file data)
         _ (parse-header header-line) ; only used for validation
         cells (-> encoded-pattern
-                  (rle-decode)
+                  (run-length-decode)
                   (pattern->cells))]
     {:hash-lines hash-lines
      :cells cells}))
@@ -148,7 +129,7 @@
 (defn world->rle-file [world]
   (let [{:keys [min-x min-y width height pattern]} (cells->pattern (:cells world))
         header-line (str "x = " width ", y = " height ", rule = " life-rule)
-        pattern-lines (-> (rle-encode pattern)
+        pattern-lines (-> (run-length-encode pattern)
                           (rle-line-wrap 70))]
     ;; TODO: add "#R" line for the top-left corner
     ;; TODO: remove any existing "#R" line 

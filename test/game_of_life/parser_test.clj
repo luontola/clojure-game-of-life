@@ -56,28 +56,28 @@
              o!
              ")))))
 
-(deftest rle-decode-test
+(deftest run-length-decode-test
   (testing "empty pattern"
-    (is (= "" (parser/rle-decode "")))
-    (is (= "!" (parser/rle-decode "!"))))
+    (is (= "" (parser/run-length-decode "")))
+    (is (= "!" (parser/run-length-decode "!"))))
 
   (testing "non-repeated tags"
-    (is (= "bo$" (parser/rle-decode "bo$")))
-    (is (= "bo$" (parser/rle-decode "1b1o1$"))))
+    (is (= "bo$" (parser/run-length-decode "bo$")))
+    (is (= "bo$" (parser/run-length-decode "1b1o1$"))))
 
   (testing "repeated tags"
-    (is (= "bbooo$$$$!" (parser/rle-decode "2b3o4$!")))))
+    (is (= "bbooo$$$$!" (parser/run-length-decode "2b3o4$!")))))
 
-(deftest rle-encode-test
+(deftest run-length-encode-test
   (testing "empty pattern"
-    (is (= "" (parser/rle-encode "")))
-    (is (= "!" (parser/rle-encode "!"))))
+    (is (= "" (parser/run-length-encode "")))
+    (is (= "!" (parser/run-length-encode "!"))))
 
   (testing "non-repeated tags"
-    (is (= "bo$" (parser/rle-encode "bo$"))))
+    (is (= "bo$" (parser/run-length-encode "bo$"))))
 
   (testing "repeated tags"
-    (is (= "2b3o4$!" (parser/rle-encode "bbooo$$$$!")))))
+    (is (= "2b3o4$!" (parser/run-length-encode "bbooo$$$$!")))))
 
 (deftest rle-line-wrap-test
   (testing "short input is not wrapped"
