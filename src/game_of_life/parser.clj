@@ -100,16 +100,14 @@
       (throw (IllegalArgumentException. (str "unsupported rule: " rule))))))
 
 (defn- parse-file [data]
-  (->> (str/split-lines data)
-       (map str/trim)
-       (reduce (fn [result line]
-                 (case (first line)
-                   \# (update result :hash-lines conj line)
-                   \x (assoc result :header-line line)
-                   (update result :encoded-pattern str line)))
-               {:hash-lines []
-                :header-line nil
-                :encoded-pattern ""})))
+  (let [{hash-lines true, other-lines false} (->> (str/split-lines data)
+                                                  (map str/trim)
+                                                  (remove empty?)
+                                                  (group-by #(str/starts-with? % "#")))
+        [header-line & pattern-lines] other-lines]
+    {:hash-lines hash-lines
+     :header-line header-line
+     :encoded-pattern (apply str pattern-lines)}))
 
 (defn rle-file->world [data]
   (let [{:keys [hash-lines header-line encoded-pattern]} (parse-file data)
