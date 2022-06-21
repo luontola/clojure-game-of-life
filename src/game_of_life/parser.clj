@@ -56,25 +56,25 @@
      (or (last ascending) -1)]))
 
 (defn- remove-trailing-dead-cells [pattern]
-  (str/replace pattern #"b+(\$|$)" "$1"))
+  (str/replace pattern #"b+$" ""))
 
 (defn cells->pattern [cells]
   (let [[min-x max-x] (min-max (map :x cells))
         [min-y max-y] (min-max (map :y cells))
-        pattern (->> (for [y (range min-y (inc max-y))]
-                       (for [x (range min-x (inc max-x))]
-                         (if (contains? cells {:x x, :y y})
-                           live-cell
-                           dead-cell)))
-                     (interpose end-of-row)
-                     (flatten)
-                     (apply str)
-                     (remove-trailing-dead-cells))]
+        rows (for [y (range min-y (inc max-y))]
+               (->> (for [x (range min-x (inc max-x))]
+                      (if (contains? cells {:x x, :y y})
+                        live-cell
+                        dead-cell))
+                    (apply str)
+                    (remove-trailing-dead-cells)))
+        pattern (str (str/join end-of-row rows)
+                     end-of-pattern)]
     {:min-x min-x
      :min-y min-y
      :width (- (inc max-x) min-x)
      :height (- (inc max-y) min-y)
-     :pattern (str pattern end-of-pattern)}))
+     :pattern pattern}))
 
 
 ;;;; RLE file <-> World
