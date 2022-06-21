@@ -52,34 +52,29 @@
 
 (defn- min-max [coll]
   (let [ascending (sort coll)]
-    [(first ascending) (last ascending)]))
+    [(or (first ascending) 0)
+     (or (last ascending) -1)]))
 
 (defn- remove-trailing-dead-cells [pattern]
   (str/replace pattern #"b+(\$|$)" "$1"))
 
 (defn cells->pattern [cells]
   (let [[min-x max-x] (min-max (map :x cells))
-        [min-y max-y] (min-max (map :y cells))]
-    {:min-x (or min-x 0)
-     :min-y (or min-y 0)
-     :width (if (empty? cells)
-              0
-              (- (inc max-x) min-x))
-     :height (if (empty? cells)
-               0
-               (- (inc max-y) min-y))
-     :pattern (str
-               (when-not (empty? cells)
-                 (->> (for [y (range min-y (inc max-y))]
-                        (for [x (range min-x (inc max-x))]
-                          (if (contains? cells {:x x, :y y})
-                            live-cell
-                            dead-cell)))
-                      (interpose end-of-row)
-                      (flatten)
-                      (apply str)
-                      (remove-trailing-dead-cells)))
-               end-of-pattern)}))
+        [min-y max-y] (min-max (map :y cells))
+        pattern (->> (for [y (range min-y (inc max-y))]
+                       (for [x (range min-x (inc max-x))]
+                         (if (contains? cells {:x x, :y y})
+                           live-cell
+                           dead-cell)))
+                     (interpose end-of-row)
+                     (flatten)
+                     (apply str)
+                     (remove-trailing-dead-cells))]
+    {:min-x min-x
+     :min-y min-y
+     :width (- (inc max-x) min-x)
+     :height (- (inc max-y) min-y)
+     :pattern (str pattern end-of-pattern)}))
 
 
 ;;;; RLE file <-> World
