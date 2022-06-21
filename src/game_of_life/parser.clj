@@ -50,20 +50,21 @@
         end-of-pattern output)
       output)))
 
-(defn- min-max [coll]
-  (let [ascending (sort coll)]
+(defn- min-max [numbers]
+  (let [ascending (sort numbers)]
     [(or (first ascending) 0)
      (or (last ascending) -1)]))
 
-(defn- remove-trailing-dead-cells [pattern]
-  (str/replace pattern #"b+$" ""))
+(defn- remove-trailing-dead-cells [row]
+  (str/replace row #"b+$" ""))
 
-(defn cells->pattern [cells]
-  (let [[min-x max-x] (min-max (map :x cells))
-        [min-y max-y] (min-max (map :y cells))
+(defn cells->pattern [live-cells]
+  (let [[min-x max-x] (min-max (map :x live-cells))
+        [min-y max-y] (min-max (map :y live-cells))
+        alive? #(contains? live-cells %)
         rows (for [y (range min-y (inc max-y))]
                (->> (for [x (range min-x (inc max-x))]
-                      (if (contains? cells {:x x, :y y})
+                      (if (alive? {:x x, :y y})
                         live-cell
                         dead-cell))
                     (apply str)
