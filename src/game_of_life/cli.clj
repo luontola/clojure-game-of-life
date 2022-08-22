@@ -4,9 +4,9 @@
             [game-of-life.parser :as parser]))
 
 (defn -main [& [input-file iterations]]
-  (-> input-file
-      (slurp)
-      (parser/rle-file->world)
-      (game/simulate (parse-long iterations))
-      (parser/world->rle-file)
-      (println)))
+  (println (binding [*out* *err*]
+             (-> input-file
+                 (slurp)
+                 (parser/rle-file->world)
+                 (game/simulate (parse-long iterations))
+                 (parser/world->rle-file)))))
